@@ -1,0 +1,114 @@
+version: "3.9"
+services:
+  eureka-sv:
+    image: eureka-image
+    container_name: eureka-container
+    env_file:
+      - .env
+    ports:
+      - "${PORT_EUREK}:${PORT_EUREK}"
+    networks:
+      - ${NAME_NET}
+
+  api-gateway:
+    image: gateway-image
+    container_name: gateway-container
+    env_file:
+      - .env
+    ports:
+      - "${PORT_GATE}:${PORT_GATE}"
+    networks:
+      - ${NAME_NET}
+
+  config-server:
+    image: config-sv-image
+    container_name: config-sv-container
+    env_file:
+      - .env
+    ports:
+      - "${PORT_CONFIG}:${PORT_CONFIG}"
+    networks:
+      - ${NAME_NET}
+
+  producto-services:
+    image: producto-image
+    container_name: producto-container
+    env_file:
+      - .env
+    ports:
+      - "${PORT_PROD}:${PORT_PROD}"
+    build:
+      context: ${NAME_PROD}
+      dockerfile: Dockerfile
+    networks:
+      - ${NAME_NET}
+
+  carrito-services:
+    image: carrito-image
+    container_name: carrito-container
+    env_file:
+      - .env
+    build:
+      context: ${NAME_CARR}
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT_CARR}:${PORT_CARR}"
+    networks:
+      - ${NAME_NET}
+    depends_on:
+      - mysql
+
+  ventas-services:
+    image: ventas-image
+    container_name: ventas-container
+    env_file:
+      - .env
+    build:
+      context: ${NAME_VTA}
+      dockerfile: Dockerfile
+    ports:
+      - "${PORT_VTA}:${PORT_VTA}"
+    networks:
+      - ${NAME_NET}
+    depends_on:
+      - mysql2
+
+  mysql:
+    image: mysql
+    container_name: bd_carrito
+    environment:
+      MYSQL_ROOT_PASSWORD: ${BD_PASS}
+      MYSQL_DATABASE: ${BD_CARR}
+      MYSQL_USER: ${BD_USER}
+      MYSQL_PASSWORD: ${BD_PASS}
+    env_file:
+      - .env
+    ports:
+      - "${PORT2_BD_CARR}:${PORT_BD_LOCAL}"
+    networks:
+      - ${NAME_NET}
+    volumes:
+      - mysql-volume:/var/lib/mysql
+
+  mysql2:
+    image: mysql
+    container_name: bd_ventas
+    environment:
+      MYSQL_ROOT_PASSWORD: ${BD_PASS}
+      MYSQL_DATABASE: ${BD_VTA}
+      MYSQL_USER: ${BD_USER}
+      MYSQL_PASSWORD: ${BD_PASS}
+    env_file:
+      - .env
+    ports:
+      - "${PORT_BD_VTA}:${PORT_BD_LOCAL}"
+    networks:
+      - ${NAME_NET}
+    volumes:
+      - mysql2-volume:/var/lib/mysql2
+
+networks:
+  spring-network:
+volumes:
+  mysql-volume:
+  mysql2-volume:

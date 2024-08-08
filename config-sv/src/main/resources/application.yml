@@ -1,0 +1,32 @@
+spring:
+  config:
+    import: optional:file:env.properties
+  application:
+    name: ${NAME_CONFIG}
+  cloud:
+    config:
+      enabled: true
+      server:
+        git:
+          uri: ${URI_REPO}
+          username: ${GIT_USER}
+          password: ${GIT_TOKEN}
+
+server:
+  port: ${PORT_CONFIG}
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREK_URL}
+
+
+
+
+
+
+
+
+
+
+
